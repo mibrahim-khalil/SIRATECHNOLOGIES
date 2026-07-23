@@ -1,22 +1,29 @@
 :root{
-  /* Colors */
-  --canvas: #ffffff;
-  --surface-soft: #fafafa;
-  --surface-dark: #171717;
-  --hairline: #e5e5e5;
-  --hairline-strong: #d4d4d4;
+  /* Brand (from logo) */
+  --brand: #123A5A;         /* primary navy */
+  --brand-deep: #0B2A43;    /* pressed / darkest */
+  --accent: #60B8E6;        /* cyan */
 
-  --ink: #000000;
-  --ink-deep: #090909;
-  --body: #737373;
-  --charcoal: #525252;
-  --mute: #a3a3a3;
+  /* Surfaces */
+  --canvas: #ffffff;
+  --surface-soft: #f7fafc;
+  --surface-dark: var(--brand-deep);
+  --hairline: #e5e7eb;
+  --hairline-strong: #d1d5db;
+
+  /* Text */
+  --ink: #081a2a;           /* deep ink (not pure black) */
+  --body: #526173;
+  --charcoal: #3f4c5c;
+  --mute: #8a96a6;
 
   --on-dark: #ffffff;
-  --on-dark-mute: rgba(255,255,255,0.7);
+  --on-dark-mute: rgba(255,255,255,0.72);
 
-  --focus-ring: rgba(59,130,246,0.5);
+  /* Focus (use accent) */
+  --focus-ring: rgba(96,184,230,0.45);
 
+  /* Terminal dots (keep) */
   --terminal-red: #ff5f56;
   --terminal-yellow: #ffbd2e;
   --terminal-green: #27c93f;
@@ -104,10 +111,10 @@ h1,h2,h3{ margin: 0; color: var(--ink); }
 }
 
 .btn-primary{
-  background: var(--ink);
+  background: var(--brand);
   color: var(--on-dark);
 }
-.btn-primary:active{ background: var(--ink-deep); }
+.btn-primary:active{ background: var(--brand-deep); }
 
 .btn-secondary{
   background: var(--canvas);
