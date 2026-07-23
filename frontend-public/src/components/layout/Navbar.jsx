@@ -3,12 +3,21 @@ import { Link, NavLink } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 import SearchPill from "../ui/SearchPill.jsx";
 
-function DotsIcon() {
+function HamburgerIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="6" cy="12" r="1.8" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-      <circle cx="18" cy="12" r="1.8" fill="currentColor" />
+      <path d="M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M4 12h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -37,7 +46,7 @@ export default function Navbar() {
     <>
       <header className="site-header">
         <div className="container header-row">
-          {/* LEFT */}
+          {/* LEFT: Brand */}
           <Link to="/" className="brand" onClick={closeMenu}>
             <img
               src="/assets/logo.png"
@@ -50,7 +59,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* MIDDLE (desktop only) */}
+          {/* CENTER: Desktop nav only */}
           <nav className="header-links" aria-label="Primary navigation">
             <NavLink to="/services" className="header-link">
               Services
@@ -72,15 +81,23 @@ export default function Navbar() {
             </NavLink>
           </nav>
 
-          {/* RIGHT */}
-          <div className="header-actions">
+          {/* SEARCH: always visible, but on mobile it sits in the top row center */}
+          <div className="header-search">
             <SearchPill placeholder="Search services..." />
+          </div>
 
-            <Button as={Link} to="/start-project" variant="primary" className="quote-btn">
+          {/* RIGHT: Quote (desktop only) + Hamburger (mobile only) */}
+          <div className="header-actions">
+            <Button
+              as={Link}
+              to="/start-project"
+              variant="primary"
+              className="quote-btn"
+              onClick={closeMenu}
+            >
               Get a Quote
             </Button>
 
-            {/* Mobile menu button (3 dots) */}
             <button
               type="button"
               className="menu-btn"
@@ -89,19 +106,20 @@ export default function Navbar() {
               aria-controls="mobile-menu"
               onClick={() => setMenuOpen(true)}
             >
-              <DotsIcon />
+              <HamburgerIcon />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile drawer */}
+      {/* Drawer Backdrop */}
       <div
         className={`drawer-backdrop ${menuOpen ? "open" : ""}`}
         onClick={closeMenu}
         aria-hidden={!menuOpen}
       />
 
+      {/* Drawer */}
       <aside
         id="mobile-menu"
         className={`drawer ${menuOpen ? "open" : ""}`}
@@ -110,7 +128,7 @@ export default function Navbar() {
         <div className="drawer-head">
           <div style={{ fontWeight: 800, color: "var(--ink)" }}>Menu</div>
           <button type="button" className="menu-btn" aria-label="Close menu" onClick={closeMenu}>
-            <DotsIcon />
+            <CloseIcon />
           </button>
         </div>
 
@@ -135,9 +153,16 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
+        {/* Mobile CTA: Get a Quote INSIDE dropdown */}
         <div className="drawer-cta">
-          <Button as={Link} to="/start-project" variant="primary" onClick={closeMenu} style={{ width: "100%" }}>
-            Start a Project
+          <Button
+            as={Link}
+            to="/start-project"
+            variant="primary"
+            onClick={closeMenu}
+            style={{ width: "100%" }}
+          >
+            Get a Quote
           </Button>
         </div>
       </aside>
