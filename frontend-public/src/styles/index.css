@@ -1613,3 +1613,123 @@ a:hover{ text-decoration-thickness: 2px; }
   .price-note{ display: none; }
   .price-note-mobile{ display: block; margin-top: 6px; color: var(--mute); font-size: 12px; }
 }
+
+/* =========================
+   HELP PAGE
+   ========================= */
+.help-head{
+  margin-bottom: 14px;
+}
+
+.help-h2{
+  margin: 0;
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+.help-sub{
+  margin: 10px 0 0;
+  color: var(--mute);
+  max-width: 72ch;
+}
+
+.help-grid{
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.help-card{
+  background: var(--canvas);
+  border: 1px solid var(--hairline-soft);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.help-card-title{
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.help-card-text{
+  margin-top: 8px;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.help-card-actions{
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* FAQ */
+.help-faq{
+  margin-top: 12px;
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.help-faq-row{
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+.help-faq-q{
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.help-faq-a{
+  margin-top: 8px;
+  color: var(--mute);
+  line-height: 1.6;
+}
+
+/* CTA */
+.help-cta{
+  margin-top: 18px;
+  background: var(--soft-cloud);
+  border: 1px solid var(--hairline-soft);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.help-cta-title{
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.help-cta-text{
+  margin-top: 6px;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.help-cta-actions{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 960px){
+  .help-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px){
+  .help-grid{ grid-template-columns: 1fr; }
+}
