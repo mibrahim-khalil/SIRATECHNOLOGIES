@@ -6,7 +6,7 @@ export default function Navbar() {
   return (
     <header className="site-header">
       <div className="container header-row">
-        {/* Left: brand */}
+        {/* Brand */}
         <Link to="/" className="brand">
           <img
             src="/assets/logo.png"
@@ -19,8 +19,8 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Middle: links exactly in your screenshot order */}
-        <nav className="header-links" aria-label="Primary">
+        {/* Center menu (matches your screenshot order) */}
+        <nav className="header-links" aria-label="Primary navigation">
           <NavLink to="/services" className="header-link">
             Services
           </NavLink>
@@ -34,7 +34,7 @@ export default function Navbar() {
             About
           </NavLink>
 
-          {/* Use Link so these don't show active together */}
+          {/* Use Link so they don't show active underline together */}
           <Link to="/contact" className="header-link">
             Help
           </Link>
@@ -43,7 +43,7 @@ export default function Navbar() {
           </Link>
         </nav>
 
-        {/* Right: search + CTA */}
+        {/* Right actions */}
         <div className="header-actions">
           <SearchPill placeholder="Search services..." />
           <Button as={Link} to="/contact" variant="primary" className="quote-btn">
