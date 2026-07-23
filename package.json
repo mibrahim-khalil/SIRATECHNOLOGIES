@@ -1,0 +1,11 @@
+{
+  "name": "siratechnologies",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SIRA Technologies - Full Stack Web App",
+  "workspaces": [
+    "backend",
+    "frontend-admin",
+    "frontend-public"
+  ]
+}
