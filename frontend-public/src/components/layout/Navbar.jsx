@@ -6,7 +6,7 @@ export default function Navbar() {
   return (
     <header className="site-header">
       <div className="container header-row">
-        {/* Brand */}
+        {/* Left: brand */}
         <Link to="/" className="brand">
           <img
             src="/assets/logo.png"
@@ -14,11 +14,13 @@ export default function Navbar() {
             className="brand-logo"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
-          <span className="brand-text">SIRA Technologies</span>
+          <span className="brand-text">
+            <span className="brand-text-strong">SIRA</span> Technologies
+          </span>
         </Link>
 
-        {/* Professional primary nav (core pages first) */}
-        <nav className="header-links">
+        {/* Middle: links exactly in your screenshot order */}
+        <nav className="header-links" aria-label="Primary">
           <NavLink to="/services" className="header-link">
             Services
           </NavLink>
@@ -31,22 +33,19 @@ export default function Navbar() {
           <NavLink to="/about" className="header-link">
             About
           </NavLink>
+
+          {/* Use Link so these don't show active together */}
+          <Link to="/contact" className="header-link">
+            Help
+          </Link>
+          <Link to="/contact" className="header-link">
+            Start a Project
+          </Link>
         </nav>
 
-        {/* Right actions: utility links + search + CTA */}
+        {/* Right: search + CTA */}
         <div className="header-actions">
-          {/* Use Link (NOT NavLink) so Help/Start don't both show active */}
-          <div className="header-utility">
-            <Link to="/contact" className="utility-link">
-              Help
-            </Link>
-            <Link to="/contact" className="utility-link">
-              Start a Project
-            </Link>
-          </div>
-
-          <SearchPill placeholder="Search services" />
-
+          <SearchPill placeholder="Search services..." />
           <Button as={Link} to="/contact" variant="primary" className="quote-btn">
             Get a Quote
           </Button>
