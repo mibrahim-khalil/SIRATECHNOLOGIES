@@ -4,34 +4,33 @@ const morgan = require("morgan");
 
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
+const siteSettingsRoutes = require("./routes/siteSettingsRoutes");
+
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 
+
 const app = express();
 
-// ---------- Global Middleware ----------
-const allowedOrigins = [
-  process.env.CLIENT_PUBLIC_URL,
-  process.env.CLIENT_ADMIN_URL,
-].filter(Boolean);
-
+// ---------- CORS (simple + permissive for dev) ----------
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // allow Postman / server-to-server (no origin)
-      if (!origin) return cb(null, true);
-      if (allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error("Not allowed by CORS"));
-    },
+    origin: true, // allow all origins in dev
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Explicit preflight handler
+app.options("*", cors());
+
+// ---------- Body parsers ----------
 app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(morgan("dev"));
 
 // ---------- Health Check ----------
@@ -48,6 +47,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/settings", siteSettingsRoutes);
 
 // ---------- Error Handling ----------
 app.use(notFound);
