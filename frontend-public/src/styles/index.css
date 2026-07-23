@@ -591,3 +591,111 @@ a:hover{ text-decoration-thickness: 2px; }
 @media (max-width: 520px){
   .about-grid{ grid-template-columns: 1fr; }
 }
+
+/* =========================
+   TEAM / FOUNDER
+   ========================= */
+.founder-card{
+  margin-top: 18px;
+  background: var(--soft-cloud);
+  border: 1px solid var(--hairline-soft);
+  border-radius: 18px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.team-grid{
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.person-card{
+  background: var(--canvas);
+  border: 1px solid var(--hairline-soft);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.person-avatar{
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: rgba(96,184,230,0.10);
+  border: 1px solid rgba(18,58,90,0.12);
+  overflow: hidden;
+  position: relative;
+}
+
+.person-img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* initials fallback stays visible even if image is hidden */
+.person-initials{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.person-name{
+  margin-top: 12px;
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.person-role{
+  margin-top: 4px;
+  color: var(--mute);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.person-bio{
+  margin-top: 10px;
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.person-links{
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.person-link{
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--soft-cloud);
+  border: 1px solid var(--hairline-soft);
+  padding: 8px 12px;
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.person-link:hover{
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 960px){
+  .team-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px){
+  .founder-card{ grid-template-columns: 1fr; }
+  .team-grid{ grid-template-columns: 1fr; }
+}
