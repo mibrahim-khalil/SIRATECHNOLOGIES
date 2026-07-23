@@ -1,4 +1,4 @@
-# SIRA Technologies (MERN Monorepo)
+# SIRA Technologies (MERN Stack)
 
 This repository contains:
 - `frontend-public` — Public website (React)
