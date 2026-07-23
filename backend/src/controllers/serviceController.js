@@ -1,10 +1,8 @@
 const Service = require("../models/Service");
 const { cloudinary } = require("../config/cloudinary");
+const { uploadBufferToCloudinary } = require("../middleware/uploadMiddleware");
 const { success, error } = require("../utils/apiResponse");
 
-/**
- * Helper: delete image from Cloudinary
- */
 async function deleteFromCloudinary(public_id) {
   if (!public_id) return;
   try {
@@ -17,23 +15,13 @@ async function deleteFromCloudinary(public_id) {
 /**
  * @desc    Create new service
  * @route   POST /api/services
- * @access  Private (Admin)
  */
 exports.createService = async (req, res) => {
   try {
-    const {
-      title,
-      shortDescription,
-      description,
-      icon,
-      features,
-      order,
-      isActive,
-    } = req.body;
+    const { title, shortDescription, description, icon, features, order, isActive } =
+      req.body;
 
     if (!title || !shortDescription || !description) {
-      // if file uploaded but validation failed, remove from cloudinary
-      if (req.file?.filename) await deleteFromCloudinary(req.file.filename);
       return error(res, "Title, short description and description are required", 400);
     }
 
@@ -46,7 +34,6 @@ exports.createService = async (req, res) => {
       isActive: isActive !== undefined ? isActive : true,
     };
 
-    // features can arrive as JSON string or array
     if (features) {
       try {
         serviceData.features =
@@ -56,19 +43,21 @@ exports.createService = async (req, res) => {
       }
     }
 
-    // if image uploaded
+    // Upload image if provided
     if (req.file) {
-      serviceData.image = {
-        url: req.file.path,
-        public_id: req.file.filename,
-      };
+      console.log(`📤 Uploading to Cloudinary: ${req.file.originalname} (${req.file.size} bytes)`);
+      const uploaded = await uploadBufferToCloudinary(
+        req.file.buffer,
+        req.file.originalname
+      );
+      console.log(`✅ Uploaded: ${uploaded.url}`);
+      serviceData.image = uploaded;
     }
 
     const service = await Service.create(serviceData);
-
     return success(res, { service }, "Service created successfully", 201);
   } catch (err) {
-    if (req.file?.filename) await deleteFromCloudinary(req.file.filename);
+    console.error("createService error:", err);
     if (err.code === 11000) {
       return error(res, "A service with this title/slug already exists", 400);
     }
@@ -78,8 +67,6 @@ exports.createService = async (req, res) => {
 
 /**
  * @desc    Get all active services (Public)
- * @route   GET /api/services
- * @access  Public
  */
 exports.getAllServices = async (req, res) => {
   try {
@@ -87,7 +74,6 @@ exports.getAllServices = async (req, res) => {
       order: 1,
       createdAt: -1,
     });
-
     return success(res, { services, count: services.length }, "Services fetched");
   } catch (err) {
     return error(res, err.message);
@@ -96,8 +82,6 @@ exports.getAllServices = async (req, res) => {
 
 /**
  * @desc    Get all services incl. inactive (Admin)
- * @route   GET /api/services/admin/all
- * @access  Private (Admin)
  */
 exports.getAllServicesAdmin = async (req, res) => {
   try {
@@ -110,8 +94,6 @@ exports.getAllServicesAdmin = async (req, res) => {
 
 /**
  * @desc    Get single service by slug or id
- * @route   GET /api/services/:slugOrId
- * @access  Public
  */
 exports.getService = async (req, res) => {
   try {
@@ -123,7 +105,6 @@ exports.getService = async (req, res) => {
       : await Service.findOne({ slug: slugOrId });
 
     if (!service) return error(res, "Service not found", 404);
-
     return success(res, { service }, "Service fetched");
   } catch (err) {
     return error(res, err.message);
@@ -132,33 +113,21 @@ exports.getService = async (req, res) => {
 
 /**
  * @desc    Update service
- * @route   PUT /api/services/:id
- * @access  Private (Admin)
  */
 exports.updateService = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id);
-    if (!service) {
-      if (req.file?.filename) await deleteFromCloudinary(req.file.filename);
-      return error(res, "Service not found", 404);
-    }
+    if (!service) return error(res, "Service not found", 404);
 
-    const {
-      title,
-      shortDescription,
-      description,
-      icon,
-      features,
-      order,
-      isActive,
-    } = req.body;
+    const { title, shortDescription, description, icon, features, order, isActive } =
+      req.body;
 
     if (title !== undefined) service.title = title;
     if (shortDescription !== undefined) service.shortDescription = shortDescription;
     if (description !== undefined) service.description = description;
     if (icon !== undefined) service.icon = icon;
     if (order !== undefined) service.order = order;
-    if (isActive !== undefined) service.isActive = isActive;
+    if (isActive !== undefined) service.isActive = isActive === "true" || isActive === true;
 
     if (features !== undefined) {
       try {
@@ -169,43 +138,41 @@ exports.updateService = async (req, res) => {
       }
     }
 
-    // new image uploaded → replace old one
+    // Replace image if new one uploaded
     if (req.file) {
+      console.log(`📤 Uploading to Cloudinary: ${req.file.originalname}`);
+      const uploaded = await uploadBufferToCloudinary(
+        req.file.buffer,
+        req.file.originalname
+      );
+
       if (service.image?.public_id) {
         await deleteFromCloudinary(service.image.public_id);
       }
-      service.image = {
-        url: req.file.path,
-        public_id: req.file.filename,
-      };
+      service.image = uploaded;
     }
 
     await service.save();
-
     return success(res, { service }, "Service updated successfully");
   } catch (err) {
-    if (req.file?.filename) await deleteFromCloudinary(req.file.filename);
+    console.error("updateService error:", err);
     return error(res, err.message);
   }
 };
 
 /**
  * @desc    Delete service
- * @route   DELETE /api/services/:id
- * @access  Private (Admin)
  */
 exports.deleteService = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id);
     if (!service) return error(res, "Service not found", 404);
 
-    // remove image from cloudinary
     if (service.image?.public_id) {
       await deleteFromCloudinary(service.image.public_id);
     }
 
     await service.deleteOne();
-
     return success(res, {}, "Service deleted successfully");
   } catch (err) {
     return error(res, err.message);
@@ -214,8 +181,6 @@ exports.deleteService = async (req, res) => {
 
 /**
  * @desc    Toggle service active status
- * @route   PATCH /api/services/:id/toggle
- * @access  Private (Admin)
  */
 exports.toggleServiceStatus = async (req, res) => {
   try {
@@ -236,10 +201,7 @@ exports.toggleServiceStatus = async (req, res) => {
 };
 
 /**
- * @desc    Reorder services (bulk)
- * @route   PUT /api/services/reorder
- * @access  Private (Admin)
- * @body    { items: [{ id, order }, ...] }
+ * @desc    Reorder services
  */
 exports.reorderServices = async (req, res) => {
   try {
