@@ -1,79 +1,166 @@
+import { useMemo, useState } from "react";
+import PageHero from "../components/ui/PageHero.jsx";
 import Button from "../components/ui/Button.jsx";
 
-const PROJECTS = [
-  {
-    title: "Brand + Landing Page",
-    tags: ["Branding", "UI"],
-    desc: "A clean identity system and responsive marketing site optimized for speed and clarity."
-  },
-  {
-    title: "Business Web Platform",
-    tags: ["Full-Stack", "Admin"],
-    desc: "Secure web application with dashboard, role-based access, and scalable architecture."
-  },
-  {
-    title: "Automation & Integrations",
-    tags: ["Automation"],
-    desc: "Workflow automation connecting tools and reducing manual operations for teams."
-  }
-];
-
 function Tag({ children }) {
+  return <span className="work-tag">{children}</span>;
+}
+
+function ProjectCard({ project }) {
   return (
-    <span
-      className="code"
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "6px 12px",
-        borderRadius: "var(--rounded-full)",
-        background: "var(--surface-soft)",
-        border: "1px solid var(--hairline)",
-        fontSize: 13,
-        color: "var(--ink)"
-      }}
-    >
-      {children}
-    </span>
+    <article className="work-card">
+      <div className="work-media" aria-hidden="true" />
+
+      <div className="work-body">
+        <div className="work-title-row">
+          <div className="work-title">{project.title}</div>
+          <div className="work-year">{project.year}</div>
+        </div>
+
+        <div className="work-desc">{project.desc}</div>
+
+        <div className="work-tags">
+          {project.tags.map((t) => (
+            <Tag key={t}>{t}</Tag>
+          ))}
+        </div>
+
+        <div className="work-actions">
+          <Button as="a" href="/start-project" variant="primary">
+            Build something similar
+          </Button>
+          {project.link ? (
+            <Button as="a" href={project.link} variant="secondary">
+              View
+            </Button>
+          ) : (
+            <Button as="a" href="/contact" variant="secondary">
+              Contact
+            </Button>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
 
 export default function Portfolio() {
+  const projects = useMemo(
+    () => [
+      {
+        title: "Business Website + Lead Capture",
+        year: "2026",
+        category: "Websites",
+        tags: ["Landing", "SEO", "Responsive"],
+        desc: "A fast multi‑page business site with clean structure, call-to-actions, and lead form flow.",
+        link: ""
+      },
+      {
+        title: "Admin Dashboard Web App",
+        year: "2026",
+        category: "Web Apps",
+        tags: ["MERN", "Admin", "Auth"],
+        desc: "A secure dashboard to manage content, services, and leads with role-based access.",
+        link: ""
+      },
+      {
+        title: "Portfolio Website (Personal/Agency)",
+        year: "2026",
+        category: "Websites",
+        tags: ["UI/UX", "Branding"],
+        desc: "Minimal, premium portfolio layout built for trust and conversions.",
+        link: ""
+      },
+      {
+        title: "Automation Workflow Integration",
+        year: "2026",
+        category: "Automation",
+        tags: ["Automation", "Integrations"],
+        desc: "Automated workflows connecting tools and reducing manual operations.",
+        link: ""
+      },
+      {
+        title: "Brand Kit + Social Templates",
+        year: "2026",
+        category: "Branding",
+        tags: ["Logo", "Brand Kit", "Social Media"],
+        desc: "Logo, typography, colors, and social templates for consistent branding.",
+        link: ""
+      },
+      {
+        title: "AI Feature Prototype",
+        year: "2026",
+        category: "AI",
+        tags: ["AI", "Data", "Prototype"],
+        desc: "A prototype AI feature for classification/insights integrated into an app workflow.",
+        link: ""
+      }
+    ],
+    []
+  );
+
+  const filters = ["All", "Websites", "Web Apps", "Branding", "Automation", "AI"];
+  const [active, setActive] = useState("All");
+
+  const filtered = useMemo(() => {
+    if (active === "All") return projects;
+    return projects.filter((p) => p.category === active);
+  }, [active, projects]);
+
   return (
-    <section className="section">
-      <div className="container">
-        <h1 className="display" style={{ fontSize: 36, lineHeight: 1.12, marginBottom: 12 }}>
-          Work
-        </h1>
-        <p style={{ marginTop: 0 }}>
-          A small selection of what we build. (Replace these with real case studies when ready.)
-        </p>
+    <>
+      <PageHero
+        title="Work"
+        subtitle="Selected projects across design, web development, AI, automation, and branding."
+        image="/assets/work-hero.jpg"
+        primaryCtaLabel="Start a Project"
+        primaryCtaTo="/start-project"
+        secondaryCtaLabel="Services"
+        secondaryCtaTo="/services"
+      />
 
-        <div style={{ marginTop: 18, display: "grid", gap: 14 }}>
-          {PROJECTS.map((p) => (
-            <div key={p.title} className="card" style={{ padding: 18 }}>
-              <div style={{ color: "var(--ink)", fontWeight: 700 }}>{p.title}</div>
-
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, marginBottom: 10 }}>
-                {p.tags.map((t) => (
-                  <Tag key={t}>{t}</Tag>
-                ))}
-              </div>
-
-              <div style={{ color: "var(--body)" }}>{p.desc}</div>
+      <section className="section">
+        <div className="container">
+          <div className="work-top">
+            <h2 className="work-h2">Projects</h2>
+            <div className="work-filters" role="tablist" aria-label="Work filters">
+              {filters.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  className={`work-filter ${active === f ? "active" : ""}`}
+                  onClick={() => setActive(f)}
+                >
+                  {f}
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <Button as="a" href="/contact">
-            Start a project
-          </Button>
-          <Button as="a" href="/services" variant="secondary">
-            View services
-          </Button>
+          <div className="work-grid">
+            {filtered.map((p) => (
+              <ProjectCard key={p.title} project={p} />
+            ))}
+          </div>
+
+          <div className="work-bottom-cta">
+            <div>
+              <div className="work-bottom-title">Want your project here?</div>
+              <div className="work-bottom-text">
+                Share your idea and we’ll help you design, build, and launch it.
+              </div>
+            </div>
+            <div className="work-bottom-actions">
+              <Button as="a" href="/start-project" variant="primary">
+                Start a Project
+              </Button>
+              <Button as="a" href="/contact" variant="secondary">
+                Contact
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
