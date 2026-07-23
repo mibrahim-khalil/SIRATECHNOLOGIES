@@ -1,6 +1,6 @@
 export default function SearchPill({ placeholder = "Search", onChange }) {
   return (
-    <div className="search-pill" role="search" aria-label="Search">
+    <div className="search-pill" role="search" aria-label="Search services">
       <svg
         className="search-icon"
         width="16"
