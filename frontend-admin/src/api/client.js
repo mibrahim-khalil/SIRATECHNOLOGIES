@@ -4,9 +4,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const client = axios.create({
   baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // Attach token automatically to every request
@@ -15,6 +12,15 @@ client.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Set correct Content-Type based on payload
+  if (config.data instanceof FormData) {
+    // Let browser set multipart boundary — DO NOT force it
+    delete config.headers["Content-Type"];
+  } else if (!config.headers["Content-Type"]) {
+    config.headers["Content-Type"] = "application/json";
+  }
+
   return config;
 });
 
@@ -25,7 +31,6 @@ client.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("sira_admin_token");
       localStorage.removeItem("sira_admin_user");
-      // hard redirect to login
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
