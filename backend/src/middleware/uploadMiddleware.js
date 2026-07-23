@@ -1,27 +1,15 @@
 const multer = require("multer");
-const multerStorageCloudinary = require("multer-storage-cloudinary");
 const { cloudinary } = require("../config/cloudinary");
 
-// Handle both old & new export styles of multer-storage-cloudinary
-const CloudinaryStorage =
-  multerStorageCloudinary.CloudinaryStorage || multerStorageCloudinary;
-
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
-    return {
-      folder: "siratechnologies",
-      resource_type: "image",
-      public_id: `${Date.now()}-${file.originalname
-        .replace(/\.[^/.]+$/, "")
-        .replace(/\s+/g, "-")}`,
-    };
-  },
-});
+// Store file in memory (buffer) — we'll upload manually
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+    files: 15,
+  },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
@@ -31,4 +19,36 @@ const upload = multer({
   },
 });
 
+/**
+ * Upload a single buffer to Cloudinary
+ * Returns: { url, public_id }
+ */
+function uploadBufferToCloudinary(buffer, originalname) {
+  return new Promise((resolve, reject) => {
+    const public_id = `${Date.now()}-${originalname
+      .replace(/\.[^/.]+$/, "")
+      .replace(/\s+/g, "-")
+      .toLowerCase()}`;
+
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "siratechnologies",
+        resource_type: "image",
+        public_id,
+        transformation: [{ quality: "auto", fetch_format: "auto" }],
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve({
+          url: result.secure_url,
+          public_id: result.public_id,
+        });
+      }
+    );
+
+    stream.end(buffer);
+  });
+}
+
 module.exports = upload;
+module.exports.uploadBufferToCloudinary = uploadBufferToCloudinary;
