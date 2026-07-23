@@ -8,6 +8,7 @@ import ManagePortfolio from "./pages/ManagePortfolio";
 import ManageLeads from "./pages/ManageLeads";
 import Settings from "./pages/Settings";
 import AdminLayout from "./components/layout/AdminLayout";
+import SiteSettings from "./pages/SiteSettings";
 
 /**
  * Protects admin routes — redirects to /login if not authenticated
@@ -78,6 +79,7 @@ export default function App() {
         <Route path="portfolio" element={<ManagePortfolio />} />
         <Route path="leads" element={<ManageLeads />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="site-settings" element={<SiteSettings />} />
       </Route>
 
       {/* Catch all */}
