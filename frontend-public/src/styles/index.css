@@ -21,7 +21,7 @@
   --r-md: 24px;
 
   /* Layout */
-  --max: 1320px;
+  --max: 1440px;
 
   /* Section spacing */
   --section: 48px;
@@ -45,31 +45,30 @@ a:hover{ text-decoration-thickness: 2px; }
 .container{
   max-width: var(--max);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
 }
 
 .section{ padding: var(--section) 0; }
 
 /* =========================
-   HEADER (FIXED + RESPONSIVE)
+   HEADER (left brand, right actions, middle menu)
    ========================= */
 .site-header{
-  height: 84px;
   background: var(--canvas);
   border-bottom: 1px solid var(--hairline-soft);
-  display: flex;
-  align-items: center;
 }
 
+/* single row on desktop */
 .header-row{
-  width: 100%;
-  display: flex;
+  height: 84px;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* brand | menu | actions */
   align-items: center;
-  gap: 26px;                /* consistent spacing */
-  min-width: 0;             /* allow center to shrink */
+  column-gap: 24px;
+  min-width: 0;
 }
 
-/* Brand */
+/* LEFT */
 .brand{
   display: inline-flex;
   align-items: center;
@@ -77,69 +76,61 @@ a:hover{ text-decoration-thickness: 2px; }
   text-decoration: none;
   color: var(--ink);
   white-space: nowrap;
-  flex: 0 0 auto;
 }
 
 .brand-logo{
   width: 56px;
   height: 56px;
-  object-fit: contain;      /* better for logos than cover */
+  object-fit: contain;
   border-radius: 10px;
 }
 
 .brand-text{
   font-weight: 600;
-  font-size: 28px;
+  font-size: 26px;
   letter-spacing: -0.2px;
   line-height: 1;
 }
-
 .brand-text-strong{ font-weight: 800; }
 
-/* Center menu: NEVER clip.
-   If space is tight, it scrolls horizontally (scrollbar hidden). */
+/* MIDDLE: menu never clips
+   - On wide screens: centered
+   - If it runs out of space: it becomes horizontally scrollable (instead of cutting text) */
 .header-links{
-  flex: 1 1 auto;
   min-width: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-
-  overflow-x: auto;
-  overflow-y: hidden;
+  gap: 20px;
   white-space: nowrap;
-
-  -ms-overflow-style: none;   /* IE/Edge */
-  scrollbar-width: none;      /* Firefox */
 }
-.header-links::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
 
 .header-link{
   color: var(--ink);
   text-decoration: none;
   padding: 10px 2px;
   border-bottom: 2px solid transparent;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
 }
+
+/* active underline only for NavLink routes */
 .header-link[aria-current="page"]{
   border-bottom-color: var(--ink);
 }
 
-/* Right actions */
+/* RIGHT */
 .header-actions{
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 14px;
 }
 
 /* Search pill */
 .search-pill{
   height: 48px;
-  width: 320px;
+  width: clamp(210px, 22vw, 320px);
   border-radius: var(--r-pill);
   background: var(--soft-cloud);
   border: 1px solid transparent;
@@ -155,10 +146,7 @@ a:hover{ text-decoration-thickness: 2px; }
   transition: border-color 160ms ease, box-shadow 220ms ease, background 160ms ease;
 }
 
-.search-icon{
-  color: var(--stone);
-  transition: color 160ms ease;
-}
+.search-icon{ color: var(--stone); transition: color 160ms ease; }
 
 .search-pill input{
   border: 0;
@@ -171,10 +159,10 @@ a:hover{ text-decoration-thickness: 2px; }
 
 .search-pill:focus-within{
   background: var(--canvas);
-  border-color: rgba(18, 58, 90, 0.40);             /* navy border */
+  border-color: rgba(18, 58, 90, 0.40);
   box-shadow:
-    0 10px 30px rgba(11,42,67,0.08),                /* soft depth */
-    0 0 0 3px rgba(96,184,230,0.16);                /* subtle cyan ring */
+    0 10px 30px rgba(11,42,67,0.08),
+    0 0 0 3px rgba(96,184,230,0.16);
 }
 .search-pill:focus-within .search-icon{ color: var(--accent); }
 
@@ -211,7 +199,57 @@ a:hover{ text-decoration-thickness: 2px; }
 .quote-btn{ min-width: 160px; }
 
 /* =========================
-   HERO (keep your existing hero styles)
+   NAV RESPONSIVE (IMPORTANT)
+   ========================= */
+
+/* If screen is not wide enough, reduce nav spacing/font first */
+@media (max-width: 1200px){
+  .brand-text{ font-size: 22px; }
+  .header-link{ font-size: 16px; }
+  .header-links{ gap: 16px; }
+}
+
+/* If it still doesn't fit, allow horizontal scroll instead of clipping */
+@media (max-width: 1050px){
+  .header-links{
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0 2px;
+  }
+  .header-links::-webkit-scrollbar{ display: none; }
+}
+
+/* Tablet/mobile: 2 rows (brand+actions top, nav below) */
+@media (max-width: 860px){
+  .header-row{
+    height: auto;
+    padding: 12px 0;
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+  }
+
+  .header-actions{
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .search-pill{ width: 100%; }
+  .quote-btn{ min-width: 150px; }
+
+  .header-links{
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+}
+
+/* =========================
+   HERO (keep your current)
    ========================= */
 .campaign-title{
   font-family: "Bebas Neue", system-ui, -apple-system;
@@ -286,37 +324,4 @@ a:hover{ text-decoration-thickness: 2px; }
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-}
-
-/* =========================
-   RESPONSIVE HEADER BEHAVIOR
-   ========================= */
-@media (max-width: 1100px){
-  .brand-text{ font-size: 22px; }
-  .header-link{ font-size: 16px; }
-  .search-pill{ width: 240px; }
-}
-
-@media (max-width: 900px){
-  .brand-text{ display: none; }   /* logo only */
-  .search-pill{ width: 220px; }
-}
-
-/* On small screens, use 2 rows: (brand + actions) then (menu) */
-@media (max-width: 820px){
-  .site-header{ height: auto; padding: 12px 0; }
-  .header-row{
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .header-actions{
-    width: 100%;
-    justify-content: space-between;
-  }
-  .search-pill{ width: 100%; flex: 1; }
-  .quote-btn{ min-width: 150px; }
-  .header-links{
-    width: 100%;
-    justify-content: flex-start;  /* menu row aligned left on mobile */
-  }
 }
