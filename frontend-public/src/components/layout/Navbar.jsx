@@ -1,32 +1,63 @@
 import { Link, NavLink } from "react-router-dom";
 import Button from "../ui/Button.jsx";
+import SearchPill from "../ui/SearchPill.jsx";
 
 export default function Navbar() {
   return (
-    <div className="navbar">
-      <div className="container nav-inner">
-        <div className="nav-left">
-          <Link to="/" className="brand display" style={{ textDecoration: "none" }}>
-            SIRA
-          </Link>
+    <header className="site-header">
+      <div className="container header-row">
+        {/* Left: brand */}
+        <Link to="/" className="brand">
+          <img
+            src="/assets/logo.png"
+            alt="SIRA Technologies"
+            className="brand-logo"
+            onError={(e) => (e.currentTarget.style.display = "none")}
+          />
+          <span className="brand-text">SIRA Technologies</span>
+        </Link>
 
-          <nav className="nav-links">
-            <NavLink to="/services">Services</NavLink>
-            <NavLink to="/portfolio">Work</NavLink>
-            <NavLink to="/pricing">Pricing</NavLink>
-            <NavLink to="/about">About</NavLink>
-          </nav>
-        </div>
+        {/* Center: links in your required order */}
+        <nav className="header-links">
+          {/* 1 */}
+          <NavLink to="/contact" className="header-link">
+            Help
+          </NavLink>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Button as={Link} to="/contact" variant="secondary">
-            Contact
-          </Button>
-          <Button as={Link} to="/contact">
+          {/* 2 */}
+          <NavLink to="/contact" className="header-link">
+            Start a Project
+          </NavLink>
+
+          {/* 3 */}
+          <NavLink to="/pricing" className="header-link">
+            Pricing
+          </NavLink>
+
+          {/* 4 */}
+          <NavLink to="/services" className="header-link">
+            Services
+          </NavLink>
+
+          {/* 5 */}
+          <NavLink to="/portfolio" className="header-link">
+            Work
+          </NavLink>
+
+          {/* 6 */}
+          <NavLink to="/about" className="header-link">
+            About
+          </NavLink>
+        </nav>
+
+        {/* Right: search + CTA */}
+        <div className="header-actions">
+          <SearchPill placeholder="Search services" />
+          <Button as={Link} to="/contact" variant="primary" className="quote-btn">
             Get a Quote
           </Button>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
