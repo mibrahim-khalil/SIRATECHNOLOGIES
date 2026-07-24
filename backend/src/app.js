@@ -11,6 +11,11 @@ const authRoutes = require("./routes/authRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const faqRoutes = require("./routes/faqRoutes");
+const addonRoutes = require("./routes/addonRoutes");
+const processRoutes = require("./routes/processRoutes");
+const popularBuildRoutes = require("./routes/popularBuildRoutes");
+const pageHeroRoutes = require("./routes/pageHeroRoutes");
 
 
 const app = express();
@@ -48,6 +53,11 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/settings", siteSettingsRoutes);
+app.use("/api/faqs", faqRoutes);
+app.use("/api/addons", addonRoutes);
+app.use("/api/process", processRoutes);
+app.use("/api/popular-builds", popularBuildRoutes);
+app.use("/api/heroes", pageHeroRoutes);
 
 // ---------- Error Handling ----------
 app.use(notFound);
