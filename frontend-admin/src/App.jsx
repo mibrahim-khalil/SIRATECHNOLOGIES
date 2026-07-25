@@ -5,10 +5,15 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ManageServices from "./pages/ManageServices";
 import ManagePortfolio from "./pages/ManagePortfolio";
+import ManagePopularBuilds from "./pages/ManagePopularBuilds";
+import ManageProcess from "./pages/ManageProcess";
+import ManageAddons from "./pages/ManageAddons";
+import ManageFAQs from "./pages/ManageFAQs";
+import ManageHeroes from "./pages/ManageHeroes";
 import ManageLeads from "./pages/ManageLeads";
+import SiteSettings from "./pages/SiteSettings";
 import Settings from "./pages/Settings";
 import AdminLayout from "./components/layout/AdminLayout";
-import SiteSettings from "./pages/SiteSettings";
 
 /**
  * Protects admin routes — redirects to /login if not authenticated
@@ -75,11 +80,22 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
+
+        {/* Content */}
         <Route path="services" element={<ManageServices />} />
         <Route path="portfolio" element={<ManagePortfolio />} />
+        <Route path="popular-builds" element={<ManagePopularBuilds />} />
+        <Route path="process" element={<ManageProcess />} />
+        <Route path="addons" element={<ManageAddons />} />
+        <Route path="faqs" element={<ManageFAQs />} />
+        <Route path="heroes" element={<ManageHeroes />} />
+
+        {/* Communication */}
         <Route path="leads" element={<ManageLeads />} />
-        <Route path="settings" element={<Settings />} />
+
+        {/* System */}
         <Route path="site-settings" element={<SiteSettings />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Catch all */}
