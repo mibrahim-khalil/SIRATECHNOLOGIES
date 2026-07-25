@@ -2756,5 +2756,331 @@ a:hover{ text-decoration-thickness: 2px; }
   font-style: italic;
 }
 
-/* You can safely remove or keep the old native select styles */
-/* (control-native-select) — no longer used */
+/* =========================
+   HOME PAGE — DYNAMIC CONTENT
+   ========================= */
+
+/* -------- Card image support (services, popular builds) -------- */
+.home-card-media-img {
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--hairline-soft);
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  margin-bottom: 4px;
+}
+
+/* Adjust default home-card-media to work with image variant */
+.home-card {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.home-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+.home-card-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(11, 42, 67, 0.08);
+  border-color: rgba(18, 58, 90, 0.2);
+}
+
+/* -------- Work / portfolio card enhancements -------- */
+.home-work-media-img {
+  background-size: cover;
+  background-position: center;
+}
+
+.home-work-card {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.home-work-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+.home-work-card-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(11, 42, 67, 0.08);
+  border-color: rgba(18, 58, 90, 0.2);
+}
+
+.home-work-cat {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+  background: rgba(96, 184, 230, 0.14);
+  border: 1px solid rgba(18, 58, 90, 0.1);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+}
+
+/* =========================
+   REVIEWS / TESTIMONIALS SECTION
+   ========================= */
+.reviews-section {
+  background: linear-gradient(
+    180deg,
+    var(--canvas) 0%,
+    var(--soft-cloud) 100%
+  );
+}
+
+.reviews-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.review-tile {
+  position: relative;
+  background: var(--canvas);
+  border: 1px solid var(--hairline-soft);
+  border-radius: 20px;
+  padding: 24px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  transition: all 220ms ease;
+}
+
+.review-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(11, 42, 67, 0.08);
+  border-color: rgba(18, 58, 90, 0.18);
+}
+
+/* Decorative quote icon */
+.review-tile-quote {
+  color: var(--accent);
+  opacity: 0.18;
+  margin-bottom: 4px;
+}
+
+/* Stars */
+.review-tile-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 14px;
+}
+
+.review-star {
+  color: var(--hairline);
+  display: grid;
+  place-items: center;
+}
+
+.review-star-on {
+  color: #f59e0b;
+}
+
+/* Message */
+.review-tile-message {
+  color: var(--charcoal);
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0 0 20px 0;
+  flex: 1;
+  font-weight: 500;
+  /* Clamp to 5 lines max */
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Author */
+.review-tile-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.review-tile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--soft-cloud);
+  flex-shrink: 0;
+  border: 2px solid var(--canvas);
+  box-shadow: 0 2px 8px rgba(11, 42, 67, 0.08);
+}
+
+.review-tile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.review-tile-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.review-tile-author-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.review-tile-name {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.review-tile-role {
+  color: var(--mute);
+  font-size: 12px;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Reviews responsive */
+@media (max-width: 960px) {
+  .reviews-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+  .review-tile {
+    padding: 22px 18px;
+  }
+}
+
+/* =========================
+   SKELETON LOADERS (shimmer)
+   ========================= */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--soft-cloud) 0%,
+    #eef2f6 40%,
+    var(--soft-cloud) 80%
+  );
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-line {
+  height: 12px;
+  margin-top: 8px;
+  border-radius: 6px;
+}
+
+.skeleton-title {
+  height: 60px;
+  width: 60%;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.16) 40%,
+    rgba(255, 255, 255, 0.08) 80%
+  );
+  background-size: 200% 100%;
+}
+
+.skeleton-sub {
+  height: 14px;
+  width: 80%;
+  border-radius: 4px;
+  margin-top: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.16) 40%,
+    rgba(255, 255, 255, 0.08) 80%
+  );
+  background-size: 200% 100%;
+}
+
+.skeleton-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+
+.skeleton-media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+}
+
+.skeleton-work-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 0;
+}
+
+.skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* Hero skeleton mode — keep the dark bg */
+.page-hero-skeleton {
+  min-height: 420px;
+}
+
+.page-hero-skeleton .skeleton {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* =========================
+   OPTIONAL: Section top divider on Reviews
+   For a subtle visual break
+   ========================= */
+.reviews-section .home-h2 {
+  position: relative;
+  display: inline-block;
+}
+
+.reviews-section .home-h2::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand) 0%, var(--accent) 100%);
+  border-radius: 2px;
+  margin-bottom: 14px;
+}
