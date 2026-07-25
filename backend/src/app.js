@@ -17,20 +17,24 @@ const processRoutes = require("./routes/processRoutes");
 const popularBuildRoutes = require("./routes/popularBuildRoutes");
 const pageHeroRoutes = require("./routes/pageHeroRoutes");
 
+// PHASE 3 routes
+const teamRoutes = require("./routes/teamRoutes");
+const pricingRoutes = require("./routes/pricingRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const aboutRoutes = require("./routes/aboutRoutes");
 
 const app = express();
 
-// ---------- CORS (simple + permissive for dev) ----------
+// ---------- CORS ----------
 app.use(
   cors({
-    origin: true, // allow all origins in dev
+    origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// Explicit preflight handler
 app.options("*", cors());
 
 // ---------- Body parsers ----------
@@ -58,6 +62,12 @@ app.use("/api/addons", addonRoutes);
 app.use("/api/process", processRoutes);
 app.use("/api/popular-builds", popularBuildRoutes);
 app.use("/api/heroes", pageHeroRoutes);
+
+// PHASE 3
+app.use("/api/team", teamRoutes);
+app.use("/api/pricing", pricingRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/about", aboutRoutes);
 
 // ---------- Error Handling ----------
 app.use(notFound);
