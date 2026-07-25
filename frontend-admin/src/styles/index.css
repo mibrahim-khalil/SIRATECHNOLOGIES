@@ -2253,3 +2253,58 @@ select {
   box-shadow: var(--shadow-md);
   z-index: 10;
 }
+
+/* =========================
+   CRUD ROW LIST
+   ========================= */
+.crud-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--hairline-soft);
+  transition: background 120ms ease;
+}
+
+.crud-row:hover {
+  background: var(--soft-cloud);
+}
+
+.crud-row-order {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.crud-row-body {
+  min-width: 0;
+}
+
+.crud-row-title {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.crud-row-preview {
+  color: var(--mute);
+  font-size: 13px;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.crud-row-actions {
+  display: flex;
+  gap: 6px;
+}
