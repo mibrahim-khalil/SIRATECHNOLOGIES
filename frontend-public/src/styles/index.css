@@ -3240,3 +3240,15 @@ a:hover{ text-decoration-thickness: 2px; }
 .home-work-media-img {
   background-image: none !important;
 }
+/* Link variant of build card (used by services) */
+.build-card-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.build-card-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(11, 42, 67, 0.08);
+  border-color: rgba(18, 58, 90, 0.2);
+}
