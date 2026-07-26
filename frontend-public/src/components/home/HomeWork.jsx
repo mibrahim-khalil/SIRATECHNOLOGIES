@@ -29,7 +29,14 @@ export default function HomeWork() {
       try {
         const { data } = await client.get("/portfolio");
         if (!cancelled) {
-          const list = data?.data?.items || data?.data?.projects || data?.data?.portfolio || [];
+          // ✅ FIX: backend returns { data: { portfolios: [...] } }
+          const list =
+            data?.data?.portfolios ||
+            data?.data?.items ||
+            data?.data?.projects ||
+            data?.data?.portfolio ||
+            [];
+
           const sorted = [...list].sort((a, b) => {
             if (a.isFeatured && !b.isFeatured) return -1;
             if (!a.isFeatured && b.isFeatured) return 1;
