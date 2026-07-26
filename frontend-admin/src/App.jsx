@@ -13,14 +13,17 @@ import ManageHeroes from "./pages/ManageHeroes";
 import ManageLeads from "./pages/ManageLeads";
 import SiteSettings from "./pages/SiteSettings";
 import Settings from "./pages/Settings";
+
+// PHASE 3
+import ManageTeam from "./pages/ManageTeam";
+import ManagePricing from "./pages/ManagePricing";
+import ManageReviews from "./pages/ManageReviews";
+import ManageAbout from "./pages/ManageAbout";
+
 import AdminLayout from "./components/layout/AdminLayout";
 
-/**
- * Protects admin routes — redirects to /login if not authenticated
- */
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
-
   if (loading) {
     return (
       <div className="page-loader">
@@ -28,20 +31,12 @@ function ProtectedRoute({ children }) {
       </div>
     );
   }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 }
 
-/**
- * Redirects to dashboard if already logged in (used on /login)
- */
 function PublicOnly({ children }) {
   const { isAuthenticated, loading } = useAuth();
-
   if (loading) {
     return (
       <div className="page-loader">
@@ -49,18 +44,13 @@ function PublicOnly({ children }) {
       </div>
     );
   }
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
+  if (isAuthenticated) return <Navigate to="/" replace />;
   return children;
 }
 
 export default function App() {
   return (
     <Routes>
-      {/* Public route */}
       <Route
         path="/login"
         element={
@@ -70,7 +60,6 @@ export default function App() {
         }
       />
 
-      {/* Protected routes (inside AdminLayout) */}
       <Route
         path="/"
         element={
@@ -87,8 +76,14 @@ export default function App() {
         <Route path="popular-builds" element={<ManagePopularBuilds />} />
         <Route path="process" element={<ManageProcess />} />
         <Route path="addons" element={<ManageAddons />} />
+        <Route path="pricing" element={<ManagePricing />} />
         <Route path="faqs" element={<ManageFAQs />} />
         <Route path="heroes" element={<ManageHeroes />} />
+
+        {/* About Page */}
+        <Route path="team" element={<ManageTeam />} />
+        <Route path="reviews" element={<ManageReviews />} />
+        <Route path="about" element={<ManageAbout />} />
 
         {/* Communication */}
         <Route path="leads" element={<ManageLeads />} />
@@ -98,7 +93,6 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
