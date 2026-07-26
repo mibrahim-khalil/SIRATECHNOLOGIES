@@ -12,14 +12,17 @@ import {
   Rocket,
   Image,
   ShieldCheck,
+  Users,
+  DollarSign,
+  Star,
+  FileText,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const NAV_GROUPS = [
   {
     label: "Overview",
-    items: [
-      { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
-    ],
+    items: [{ to: "/", label: "Dashboard", icon: LayoutDashboard, end: true }],
   },
   {
     label: "Content",
@@ -29,15 +32,22 @@ const NAV_GROUPS = [
       { to: "/popular-builds", label: "Popular Builds", icon: Rocket },
       { to: "/process", label: "Process Steps", icon: ListChecks },
       { to: "/addons", label: "Add-ons", icon: PlusCircle },
+      { to: "/pricing", label: "Pricing Plans", icon: DollarSign },
       { to: "/faqs", label: "FAQs", icon: HelpCircle },
       { to: "/heroes", label: "Page Heroes", icon: Image },
     ],
   },
   {
-    label: "Communication",
+    label: "About Page",
     items: [
-      { to: "/leads", label: "Leads", icon: Inbox },
+      { to: "/team", label: "Team Members", icon: Users },
+      { to: "/reviews", label: "Reviews", icon: Star },
+      { to: "/about", label: "About Content", icon: FileText },
     ],
+  },
+  {
+    label: "Communication",
+    items: [{ to: "/leads", label: "Leads", icon: Inbox }],
   },
   {
     label: "System",
@@ -49,27 +59,32 @@ const NAV_GROUPS = [
 ];
 
 export default function Sidebar({ open, onClose }) {
+  const { siteSettings } = useAuth();
+
+  const logoUrl = siteSettings?.logo?.url;
+  const siteName = siteSettings?.siteName || "SIRA Technologies";
+  const shortName = siteName.split(" ")[0].toUpperCase();
+
   return (
     <>
-      {/* Mobile backdrop */}
-      <div
-        className={`sidebar-backdrop ${open ? "open" : ""}`}
-        onClick={onClose}
-      />
+      <div className={`sidebar-backdrop ${open ? "open" : ""}`} onClick={onClose} />
 
       <aside className={`sidebar ${open ? "open" : ""}`}>
-        {/* Brand */}
+        {/* Dynamic Brand */}
         <div className="sidebar-brand">
-          <div className="sidebar-brand-logo">
-            <ShieldCheck size={20} />
+          <div className={`sidebar-brand-logo ${logoUrl ? "has-image" : ""}`}>
+            {logoUrl ? (
+              <img src={logoUrl} alt={siteName} />
+            ) : (
+              <ShieldCheck size={20} />
+            )}
           </div>
           <div className="sidebar-brand-text">
-            <div className="sidebar-brand-name">SIRA</div>
+            <div className="sidebar-brand-name">{shortName}</div>
             <div className="sidebar-brand-role">Admin Console</div>
           </div>
         </div>
 
-        {/* Nav */}
         <nav className="sidebar-nav">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} style={{ marginBottom: 10 }}>
@@ -95,10 +110,8 @@ export default function Sidebar({ open, onClose }) {
           ))}
         </nav>
 
-        {/* Footer */}
         <div className="sidebar-foot">
           <div className="sidebar-foot-tag">
-            v1.0 · Live
             <span className="live-dot" />
           </div>
         </div>
