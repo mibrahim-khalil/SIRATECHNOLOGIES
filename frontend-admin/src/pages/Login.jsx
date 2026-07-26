@@ -5,12 +5,16 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, siteSettings } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const logoUrl = siteSettings?.logo?.url;
+  const siteName = siteSettings?.siteName || "SIRA Technologies";
+  const shortName = siteName.split(" ")[0].toUpperCase();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -42,9 +46,15 @@ export default function Login() {
       {/* Left brand panel */}
       <aside className="login-brand">
         <div className="login-brand-inner">
-          <div className="login-logo">
-            <ShieldCheck size={28} />
-            <span>SIRA</span>
+          <div className={`login-logo ${logoUrl ? "has-image" : ""}`}>
+            {logoUrl ? (
+              <img src={logoUrl} alt={siteName} />
+            ) : (
+              <>
+                <ShieldCheck size={28} />
+                <span>{shortName}</span>
+              </>
+            )}
           </div>
 
           <h1 className="login-brand-title">
@@ -74,9 +84,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="field">
-              <label className="label" htmlFor="email">
-                Email
-              </label>
+              <label className="label" htmlFor="email">Email</label>
               <div className="input-wrap">
                 <Mail size={16} className="input-icon" />
                 <input
@@ -94,9 +102,7 @@ export default function Login() {
             </div>
 
             <div className="field">
-              <label className="label" htmlFor="password">
-                Password
-              </label>
+              <label className="label" htmlFor="password">Password</label>
               <div className="input-wrap">
                 <Lock size={16} className="input-icon" />
                 <input
