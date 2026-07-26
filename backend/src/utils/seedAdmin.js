@@ -1,24 +1,25 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-const connectDB = require("../config/db");
 const User = require("../models/User");
 
+/**
+ * Seed the initial admin user if none exists.
+ * Safe to call on every server startup — will only create if missing.
+ * 
+ * Can also be run standalone via: `npm run seed:admin`
+ */
 async function seedAdmin() {
   try {
-    await connectDB();
-
     const { ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
 
     if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
-      console.error("❌ ADMIN_EMAIL and ADMIN_PASSWORD must be in .env");
-      process.exit(1);
+      console.warn("⚠️  Skipping admin seed: ADMIN_EMAIL and ADMIN_PASSWORD not set");
+      return;
     }
 
     const existing = await User.findOne({ email: ADMIN_EMAIL.toLowerCase() });
 
     if (existing) {
-      console.log(`⚠️  Admin already exists: ${existing.email}`);
-      process.exit(0);
+      console.log(`👤 Admin exists: ${existing.email}`);
+      return;
     }
 
     const admin = await User.create({
@@ -31,14 +32,29 @@ async function seedAdmin() {
     console.log("✅ Admin created successfully");
     console.log(`   Name:     ${admin.name}`);
     console.log(`   Email:    ${admin.email}`);
-    console.log(`   Password: ${ADMIN_PASSWORD}`);
-    console.log("\n⚠️  Change the password after first login!");
-
-    process.exit(0);
+    console.log("⚠️  Please change the password after first login!");
   } catch (err) {
     console.error("❌ Seeder error:", err.message);
-    process.exit(1);
+    // Don't crash the server on seed failure
   }
 }
 
-seedAdmin();
+module.exports = seedAdmin;
+
+// ---------- Standalone mode ----------
+// If run directly (npm run seed:admin), connect and seed
+if (require.main === module) {
+  require("dotenv").config();
+  const connectDB = require("../config/db");
+
+  (async () => {
+    try {
+      await connectDB();
+      await seedAdmin();
+      process.exit(0);
+    } catch (err) {
+      console.error("❌ Standalone seed failed:", err.message);
+      process.exit(1);
+    }
+  })();
+}
