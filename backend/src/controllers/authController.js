@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { cloudinary } = require("../config/cloudinary");
+const { uploadBufferToCloudinary } = require("../middleware/uploadMiddleware");
 const { success, error } = require("../utils/apiResponse");
 
 // Generate JWT token
@@ -11,10 +13,18 @@ const generateToken = (user) => {
   );
 };
 
+async function deleteFromCloudinary(public_id) {
+  if (!public_id) return;
+  try {
+    await cloudinary.uploader.destroy(public_id);
+  } catch (err) {
+    console.error("Cloudinary delete error:", err.message);
+  }
+}
+
 /**
  * @desc    Login admin
  * @route   POST /api/auth/login
- * @access  Public
  */
 exports.login = async (req, res) => {
   try {
@@ -24,7 +34,6 @@ exports.login = async (req, res) => {
       return error(res, "Email and password are required", 400);
     }
 
-    // include password (select:false in model)
     const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
     if (!user) return error(res, "Invalid credentials", 401);
@@ -56,7 +65,6 @@ exports.login = async (req, res) => {
 /**
  * @desc    Get logged-in user profile
  * @route   GET /api/auth/me
- * @access  Private
  */
 exports.getMe = async (req, res) => {
   try {
@@ -72,7 +80,6 @@ exports.getMe = async (req, res) => {
 /**
  * @desc    Update logged-in user profile
  * @route   PUT /api/auth/me
- * @access  Private
  */
 exports.updateMe = async (req, res) => {
   try {
@@ -107,7 +114,6 @@ exports.updateMe = async (req, res) => {
 /**
  * @desc    Change password
  * @route   PUT /api/auth/change-password
- * @access  Private
  */
 exports.changePassword = async (req, res) => {
   try {
@@ -126,10 +132,91 @@ exports.changePassword = async (req, res) => {
     const isMatch = await user.matchPassword(currentPassword);
     if (!isMatch) return error(res, "Current password is incorrect", 401);
 
-    user.password = newPassword; // will be hashed by pre-save hook
+    user.password = newPassword;
     await user.save();
 
     return success(res, {}, "Password changed successfully");
+  } catch (err) {
+    return error(res, err.message);
+  }
+};
+
+/**
+ * @desc    Upload / update avatar
+ * @route   POST /api/auth/avatar
+ */
+exports.uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return error(res, "No image file provided", 400);
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return error(res, "User not found", 404);
+
+    console.log(`📤 Uploading avatar: ${req.file.originalname}`);
+    const uploaded = await uploadBufferToCloudinary(
+      req.file.buffer,
+      req.file.originalname
+    );
+    console.log(`✅ Avatar uploaded: ${uploaded.url}`);
+
+    // Remove old avatar from cloud
+    if (user.avatar?.public_id) {
+      await deleteFromCloudinary(user.avatar.public_id);
+    }
+
+    user.avatar = uploaded;
+    await user.save();
+
+    return success(
+      res,
+      {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+        },
+      },
+      "Avatar updated successfully"
+    );
+  } catch (err) {
+    console.error("uploadAvatar error:", err);
+    return error(res, err.message);
+  }
+};
+
+/**
+ * @desc    Remove avatar
+ * @route   DELETE /api/auth/avatar
+ */
+exports.removeAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return error(res, "User not found", 404);
+
+    if (user.avatar?.public_id) {
+      await deleteFromCloudinary(user.avatar.public_id);
+    }
+
+    user.avatar = { url: undefined, public_id: undefined };
+    await user.save();
+
+    return success(
+      res,
+      {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+        },
+      },
+      "Avatar removed"
+    );
   } catch (err) {
     return error(res, err.message);
   }
