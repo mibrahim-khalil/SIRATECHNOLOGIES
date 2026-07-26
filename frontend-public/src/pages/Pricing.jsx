@@ -1,218 +1,497 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Check, X, ChevronDown, HelpCircle, Sparkles, Package, Zap } from "lucide-react";
 import PageHero from "../components/ui/PageHero.jsx";
 import Button from "../components/ui/Button.jsx";
+import client from "../api/client.js";
 
-function Feature({ children }) {
+/* ---------- Currency symbols ---------- */
+const CURRENCY_SYMBOLS = {
+  USD: "$",
+  PKR: "₨",
+  EUR: "€",
+  GBP: "£",
+  AED: "د.إ",
+};
+
+/* ---------- Billing cycle types ---------- */
+const CYCLES = { MONTHLY: "monthly", YEARLY: "yearly" };
+
+/* ---------- Helper: calc yearly savings % ---------- */
+function calcSavings(monthlyPrice, yearlyPrice) {
+  if (!monthlyPrice || !yearlyPrice) return 0;
+  const monthlyTotal = monthlyPrice * 12;
+  if (yearlyPrice >= monthlyTotal) return 0;
+  const savings = ((monthlyTotal - yearlyPrice) / monthlyTotal) * 100;
+  return Math.round(savings);
+}
+
+/* ---------- Billing Toggle ---------- */
+function BillingToggle({ cycle, onChange, avgSavings }) {
   return (
-    <div className="price-feature">
-      <span className="price-check" aria-hidden="true">✓</span>
-      <span>{children}</span>
+    <div className="pricing-toggle-wrap">
+      <div className="pricing-toggle">
+        <button
+          type="button"
+          className={`pricing-toggle-btn ${cycle === CYCLES.MONTHLY ? "active" : ""}`}
+          onClick={() => onChange(CYCLES.MONTHLY)}
+        >
+          Monthly
+        </button>
+        <button
+          type="button"
+          className={`pricing-toggle-btn ${cycle === CYCLES.YEARLY ? "active" : ""}`}
+          onClick={() => onChange(CYCLES.YEARLY)}
+        >
+          Yearly
+          {avgSavings > 0 && (
+            <span className="pricing-toggle-save">Save {avgSavings}%</span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
 
-function PricingCard({
-  title,
-  subtitle,
-  price,
-  note,
-  features,
-  popular,
-  ctaLabel = "Choose Plan",
-  ctaTo = "/start-project"
-}) {
+/* ---------- Pricing Card ---------- */
+function PricingCard({ plan, cycle }) {
+  const symbol = CURRENCY_SYMBOLS[plan.currency] || "$";
+  const hasYearly = plan.yearlyPrice > 0;
+  const activeCycle = hasYearly ? cycle : CYCLES.MONTHLY;
+  const displayPrice =
+    activeCycle === CYCLES.YEARLY ? plan.yearlyPrice : plan.monthlyPrice;
+  const priceUnit = activeCycle === CYCLES.YEARLY ? "/yr" : "/mo";
+
+  const cardStyle = plan.isFeatured
+    ? {
+        borderColor: plan.accentColor || "var(--brand)",
+      }
+    : {};
+
   return (
-    <div className={`price-card ${popular ? "popular" : ""}`}>
-      {popular ? <div className="price-badge">Most Popular</div> : null}
+    <div
+      className={`plan-card ${plan.isFeatured ? "plan-card-featured" : ""}`}
+      style={cardStyle}
+    >
+      {plan.badge && (
+        <div
+          className="plan-badge"
+          style={{
+            background: plan.accentColor
+              ? `linear-gradient(135deg, ${plan.accentColor} 0%, ${plan.accentColor}dd 100%)`
+              : undefined,
+          }}
+        >
+          <Sparkles size={12} />
+          {plan.badge}
+        </div>
+      )}
 
-      <div className="price-title">{title}</div>
-      <div className="price-subtitle">{subtitle}</div>
-
-      <div className="price-row">
-        <div className="price-amount">{price}</div>
-        {note ? <div className="price-note">{note}</div> : null}
+      <div className="plan-head">
+        <div className="plan-name">{plan.name}</div>
+        {plan.tagline && <div className="plan-tagline">{plan.tagline}</div>}
       </div>
 
-      {note ? <div className="price-note-mobile">{note}</div> : null}
-
-      <div className="price-features">
-        {features.map((f) => (
-          <Feature key={f}>{f}</Feature>
-        ))}
+      {/* Price display */}
+      <div className="plan-price-block">
+        {plan.isCustomPricing ? (
+          <>
+            <div className="plan-price-custom">
+              {plan.customPriceLabel || "Custom"}
+            </div>
+            <div className="plan-price-unit">Get a personalized quote</div>
+          </>
+        ) : (
+          <>
+            <div className="plan-price">
+              <span className="plan-price-currency">{symbol}</span>
+              <span className="plan-price-value">
+                {displayPrice.toLocaleString()}
+              </span>
+              <span className="plan-price-unit">{priceUnit}</span>
+            </div>
+            {activeCycle === CYCLES.YEARLY && hasYearly && (
+              <div className="plan-price-hint">
+                {symbol}
+                {Math.round(plan.yearlyPrice / 12).toLocaleString()}/mo billed yearly
+              </div>
+            )}
+            {!hasYearly && cycle === CYCLES.YEARLY && (
+              <div className="plan-price-hint">Monthly billing only</div>
+            )}
+          </>
+        )}
       </div>
 
-      <div className="price-actions">
-        <Button as="a" href={ctaTo} variant={popular ? "primary" : "secondary"} style={{ width: "100%" }}>
-          {ctaLabel}
+      {plan.description && (
+        <div className="plan-description">{plan.description}</div>
+      )}
+
+      {/* Features */}
+      {plan.features?.length > 0 && (
+        <ul className="plan-features">
+          {plan.features.map((f, i) => (
+            <li
+              key={i}
+              className={!f.included ? "plan-feature-excluded" : ""}
+            >
+              <span
+                className={
+                  f.included ? "plan-check plan-check-yes" : "plan-check plan-check-no"
+                }
+              >
+                {f.included ? (
+                  <Check size={12} strokeWidth={3} />
+                ) : (
+                  <X size={12} strokeWidth={3} />
+                )}
+              </span>
+              <span>{f.text}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* CTA */}
+      <div className="plan-cta">
+        <Button
+          as={Link}
+          to={plan.ctaLink || "/contact"}
+          variant={plan.isFeatured ? "primary" : "secondary"}
+          style={{
+            width: "100%",
+            ...(plan.isFeatured && plan.accentColor
+              ? { background: plan.accentColor, borderColor: plan.accentColor }
+              : {}),
+          }}
+        >
+          {plan.ctaText || "Get Started"}
         </Button>
       </div>
-
-      <div className="price-foot">
-        Final cost depends on scope (pages, features, integrations).
-      </div>
     </div>
   );
 }
 
-function Addon({ title, price, text }) {
+/* ---------- Addon Card ---------- */
+function AddonCard({ addon }) {
   return (
-    <div className="addon">
-      <div className="addon-top">
-        <div className="addon-title">{title}</div>
-        <div className="addon-price">{price}</div>
+    <div className="addon-card">
+      <div className="addon-card-head">
+        <div className="addon-card-icon">
+          <Zap size={18} />
+        </div>
+        <div className="addon-card-price">{addon.price}</div>
       </div>
-      <div className="addon-text">{text}</div>
+      <div className="addon-card-title">{addon.title}</div>
+      <div className="addon-card-text">{addon.description}</div>
     </div>
   );
 }
 
+/* ---------- FAQ Accordion Item ---------- */
+function FaqItem({ faq, isOpen, onToggle }) {
+  return (
+    <div className={`faq-item ${isOpen ? "faq-item-open" : ""}`}>
+      <button
+        type="button"
+        className="faq-question"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+      >
+        <span>{faq.question}</span>
+        <span className="faq-icon">
+          <ChevronDown size={18} />
+        </span>
+      </button>
+      <div className="faq-answer" aria-hidden={!isOpen}>
+        <div className="faq-answer-inner">{faq.answer}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Empty State ---------- */
+function EmptyState({ icon: Icon, title, text }) {
+  return (
+    <div className="services-empty">
+      <div className="services-empty-icon">
+        <Icon size={40} />
+      </div>
+      <div className="services-empty-title">{title}</div>
+      <div className="services-empty-text">{text}</div>
+      <Button as={Link} to="/contact" variant="primary">
+        Get in touch
+      </Button>
+    </div>
+  );
+}
+
+/* ============================================
+   MAIN PRICING PAGE
+   ============================================ */
 export default function Pricing() {
-  const plans = [
-    {
-      title: "Starter",
-      subtitle: "Landing page / simple website",
-      price: "$99+",
-      note: "Best for: personal, small business",
-      features: [
-        "1 page (responsive)",
-        "Modern UI layout",
-        "Contact section",
-        "Basic SEO setup",
-        "Fast loading + clean structure"
-      ]
-    },
-    {
-      title: "Business",
-      subtitle: "Multi‑page company website",
-      price: "$299+",
-      note: "Best for: services, agencies, startups",
-      popular: true,
-      features: [
-        "Up to 5 pages",
-        "Custom sections + animations",
-        "Contact form (frontend)",
-        "SEO-ready structure",
-        "Deployment support"
-      ]
-    },
-    {
-      title: "Pro Web App",
-      subtitle: "Web app + admin dashboard",
-      price: "$699+",
-      note: "Best for: platforms, dashboards",
-      features: [
-        "MERN stack web app",
-        "Admin panel (CRUD)",
-        "Authentication + roles",
-        "API integration",
-        "Scalable folder structure"
-      ]
-    }
-  ];
+  const [plans, setPlans] = useState([]);
+  const [plansLoading, setPlansLoading] = useState(true);
 
-  const addons = [
-    { title: "Logo + Brand Kit", price: "$49+", text: "Logo, colors, typography, brand guidelines." },
-    { title: "UI/UX Prototype", price: "$79+", text: "Wireframes + clickable Figma prototype." },
-    { title: "AI Feature", price: "$199+", text: "Basic AI integration / ML feature prototype." },
-    { title: "Automation Workflow", price: "$99+", text: "Integrations + automated processes (custom)." }
-  ];
+  const [addons, setAddons] = useState([]);
+  const [addonsLoading, setAddonsLoading] = useState(true);
 
-  const faqs = [
-    ["Do you offer revisions?", "Yes. Revisions depend on the package and scope."],
-    ["Do you provide hosting/domain?", "We can guide you. Hosting/domain are usually paid by the client."],
-    ["Can you build exactly like my reference?", "Yes, share a reference and we can match it closely."],
-    ["How do we start?", "Click “Start a Project” and send your requirements. We’ll respond with next steps."]
-  ];
+  const [faqs, setFaqs] = useState([]);
+  const [faqsLoading, setFaqsLoading] = useState(true);
+  const [openFaqId, setOpenFaqId] = useState(null);
+
+  const [cycle, setCycle] = useState(CYCLES.MONTHLY);
+
+  // Load pricing plans
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await client.get("/pricing");
+        if (!cancelled) {
+          const list = data?.data?.plans || [];
+          setPlans(list);
+        }
+      } catch (err) {
+        console.warn("[Pricing] Plans fetch failed:", err.message);
+      } finally {
+        if (!cancelled) setPlansLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Load addons
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await client.get("/addons");
+        if (!cancelled) {
+          const list = data?.data?.items || data?.data?.addons || [];
+          setAddons(list);
+        }
+      } catch (err) {
+        console.warn("[Pricing] Addons fetch failed:", err.message);
+      } finally {
+        if (!cancelled) setAddonsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Load pricing FAQs
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await client.get("/faqs?category=pricing");
+        if (!cancelled) {
+          const list = data?.data?.items || data?.data?.faqs || [];
+          setFaqs(list);
+        }
+      } catch (err) {
+        console.warn("[Pricing] FAQs fetch failed:", err.message);
+      } finally {
+        if (!cancelled) setFaqsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Calculate average savings across all plans (for the toggle badge)
+  const avgSavings = (() => {
+    const savings = plans
+      .filter((p) => !p.isCustomPricing && p.monthlyPrice && p.yearlyPrice)
+      .map((p) => calcSavings(p.monthlyPrice, p.yearlyPrice));
+    if (savings.length === 0) return 0;
+    return Math.round(savings.reduce((a, b) => a + b, 0) / savings.length);
+  })();
+
+  // Show toggle only if at least one plan has yearly pricing
+  const hasAnyYearly = plans.some((p) => p.yearlyPrice > 0);
 
   return (
     <>
+      {/* HERO — dynamic */}
       <PageHero
-        title="Pricing"
-        subtitle="Simple packages like gigs. Final quote depends on scope."
+        pageKey="pricing"
+        title="Simple, transparent pricing"
+        subtitle="Choose the plan that fits your needs. No hidden fees, cancel anytime."
         image="/assets/pricing-hero.jpg"
         primaryCtaLabel="Start a Project"
         primaryCtaTo="/start-project"
-        secondaryCtaLabel="See Work"
-        secondaryCtaTo="/portfolio"
+        secondaryCtaLabel="Contact Sales"
+        secondaryCtaTo="/contact"
       />
 
-      {/* Plans */}
+      {/* ============ PLANS ============ */}
       <section className="section">
         <div className="container">
-          <div className="pricing-head">
-            <h2 className="pricing-h2">Packages</h2>
+          <div className="pricing-head-center">
+            <h2 className="pricing-h2">Choose your plan</h2>
             <p className="pricing-sub">
-              Choose a starting point. We’ll confirm requirements and finalize the quote.
+              Flexible packages designed to scale with your business.
             </p>
           </div>
 
-          <div className="pricing-grid">
-            {plans.map((p) => (
-              <PricingCard
-                key={p.title}
-                title={p.title}
-                subtitle={p.subtitle}
-                price={p.price}
-                note={p.note}
-                features={p.features}
-                popular={p.popular}
-                ctaLabel="Start with this"
-                ctaTo="/start-project"
-              />
-            ))}
+          {/* Billing toggle */}
+          {hasAnyYearly && !plansLoading && plans.length > 0 && (
+            <BillingToggle
+              cycle={cycle}
+              onChange={setCycle}
+              avgSavings={avgSavings}
+            />
+          )}
+
+          {plansLoading ? (
+            <div className="plans-grid">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="plan-card">
+                  <div className="skeleton skeleton-line" style={{ width: 100 }} />
+                  <div className="skeleton skeleton-line" style={{ width: "80%", marginTop: 8 }} />
+                  <div className="skeleton" style={{ height: 60, width: "60%", marginTop: 20, borderRadius: 8 }} />
+                  <div style={{ marginTop: 20 }}>
+                    {[1, 2, 3, 4].map((j) => (
+                      <div key={j} className="skeleton skeleton-line" style={{ marginTop: 10 }} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : plans.length === 0 ? (
+            <EmptyState
+              icon={Package}
+              title="Pricing plans coming soon"
+              text="We're finalizing our pricing packages. In the meantime, contact us for a custom quote."
+            />
+          ) : (
+            <div
+              className="plans-grid"
+              style={{
+                gridTemplateColumns: `repeat(${Math.min(plans.length, 3)}, minmax(0, 1fr))`,
+              }}
+            >
+              {plans.map((plan) => (
+                <PricingCard key={plan._id} plan={plan} cycle={cycle} />
+              ))}
+            </div>
+          )}
+
+          <div className="pricing-note">
+            💡 All prices are exclusive of applicable taxes. Custom features can be
+            added on request.
           </div>
         </div>
       </section>
 
-      {/* Add-ons */}
-      <section className="section">
-        <div className="container">
-          <div className="pricing-head">
-            <h2 className="pricing-h2">Add‑ons</h2>
-            <p className="pricing-sub">Upgrade your package with extra services.</p>
-          </div>
-
-          <div className="addons-grid">
-            {addons.map((a) => (
-              <Addon key={a.title} title={a.title} price={a.price} text={a.text} />
-            ))}
-          </div>
-
-          <div className="pricing-cta">
-            <div>
-              <div className="pricing-cta-title">Want an exact quote?</div>
-              <div className="pricing-cta-text">Send your requirements and we’ll reply with pricing + timeline.</div>
+      {/* ============ ADD-ONS ============ */}
+      {(addonsLoading || addons.length > 0) && (
+        <section className="section addons-section-bg">
+          <div className="container">
+            <div className="pricing-head-center">
+              <h2 className="pricing-h2">Boost with add-ons</h2>
+              <p className="pricing-sub">
+                Extra services to complement any plan.
+              </p>
             </div>
 
-            <div className="pricing-cta-actions">
-              <Button as="a" href="/start-project" variant="primary">
-                Start a Project
-              </Button>
-              <Button as="a" href="/contact" variant="secondary">
-                Contact
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="section">
-        <div className="container">
-          <div className="pricing-head">
-            <h2 className="pricing-h2">FAQ</h2>
-            <p className="pricing-sub">Quick answers before you start.</p>
-          </div>
-
-          <div className="faq">
-            {faqs.map(([q, a]) => (
-              <div key={q} className="faq-row">
-                <div className="faq-q">{q}</div>
-                <div className="faq-a">{a}</div>
+            {addonsLoading ? (
+              <div className="addons-grid-new">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="addon-card">
+                    <div className="skeleton skeleton-line" style={{ width: 80 }} />
+                    <div className="skeleton skeleton-line" style={{ marginTop: 14 }} />
+                    <div className="skeleton skeleton-line" style={{ width: "80%" }} />
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="addons-grid-new">
+                {addons.map((addon) => (
+                  <AddonCard key={addon._id} addon={addon} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ============ CTA BANNER ============ */}
+      <section className="section">
+        <div className="container">
+          <div className="svc-cta-banner">
+            <div className="svc-cta-content">
+              <div className="svc-cta-title">Need a custom quote?</div>
+              <div className="svc-cta-text">
+                Tell us your requirements and we'll build a package that fits
+                your budget and timeline perfectly.
+              </div>
+            </div>
+            <div className="svc-cta-actions">
+              <Button as={Link} to="/start-project" variant="primary">
+                Get Custom Quote
+              </Button>
+              <Button as={Link} to="/contact" variant="secondary">
+                Talk to Sales
+              </Button>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* ============ PRICING FAQs ============ */}
+      {(faqsLoading || faqs.length > 0) && (
+        <section className="section">
+          <div className="container">
+            <div className="services-head-center">
+              <div className="svc-faq-badge">
+                <HelpCircle size={16} />
+                <span>Pricing FAQ</span>
+              </div>
+              <h2 className="pricing-h2">Common pricing questions</h2>
+              <p className="pricing-sub">
+                Everything you need to know before choosing a plan.
+              </p>
+            </div>
+
+            {faqsLoading ? (
+              <div className="faq-list">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="faq-item">
+                    <div style={{ padding: "18px 20px" }}>
+                      <div className="skeleton skeleton-line" style={{ width: "60%" }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="faq-list">
+                {faqs.map((faq) => (
+                  <FaqItem
+                    key={faq._id}
+                    faq={faq}
+                    isOpen={openFaqId === faq._id}
+                    onToggle={() =>
+                      setOpenFaqId(openFaqId === faq._id ? null : faq._id)
+                    }
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="svc-faq-footer">
+              <div className="text-mute">Still have questions?</div>
+              <Button as={Link} to="/help" variant="secondary">
+                See all FAQs
+              </Button>
+              <Button as={Link} to="/contact" variant="primary">
+                Contact us
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }
