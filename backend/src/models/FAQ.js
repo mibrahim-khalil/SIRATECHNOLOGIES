@@ -6,7 +6,7 @@ const faqSchema = new mongoose.Schema(
     answer: { type: String, required: true },
     category: {
       type: String,
-      enum: ["general", "pricing", "help", "process"],
+      enum: ["general", "services", "pricing", "process", "support", "help"],
       default: "general",
     },
     order: { type: Number, default: 0 },
