@@ -11,8 +11,12 @@ const PAGE_TITLES = {
   "/popular-builds": { title: "Popular Builds", sub: "Productized offerings shown on Home & Services" },
   "/process": { title: "Process Steps", sub: "'How we work' section" },
   "/addons": { title: "Add-ons", sub: "Pricing add-ons" },
+  "/pricing": { title: "Pricing Plans", sub: "Plans shown on the Pricing page" },
   "/faqs": { title: "FAQs", sub: "Frequently asked questions" },
   "/heroes": { title: "Page Heroes", sub: "Top banner for each public page" },
+  "/team": { title: "Team Members", sub: "People shown on the About page" },
+  "/reviews": { title: "Reviews & Testimonials", sub: "Client feedback (approve public submissions here)" },
+  "/about": { title: "About Content", sub: "Story, mission, values & About page content" },
   "/leads": { title: "Leads", sub: "Contact form submissions" },
   "/site-settings": { title: "Site Settings", sub: "Global content, contact info, and branding" },
   "/settings": { title: "Account Settings", sub: "Profile & password" },
@@ -26,12 +30,8 @@ export default function Topbar({ onMenuClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const page = PAGE_TITLES[location.pathname] || {
-    title: "Admin",
-    sub: "",
-  };
+  const page = PAGE_TITLES[location.pathname] || { title: "Admin", sub: "" };
 
-  // Close menu on outside click
   useEffect(() => {
     const handler = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -55,14 +55,12 @@ export default function Topbar({ onMenuClick }) {
     .join("")
     .toUpperCase();
 
+  const avatarUrl = user?.avatar?.url;
+
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <button
-          className="topbar-menu-btn"
-          onClick={onMenuClick}
-          aria-label="Toggle menu"
-        >
+        <button className="topbar-menu-btn" onClick={onMenuClick} aria-label="Toggle menu">
           <Menu size={20} />
         </button>
         <div>
@@ -79,7 +77,9 @@ export default function Topbar({ onMenuClick }) {
             aria-haspopup="menu"
             aria-expanded={menuOpen}
           >
-            <div className="user-avatar">{initials}</div>
+            <div className="user-avatar">
+              {avatarUrl ? <img src={avatarUrl} alt={user?.name} /> : initials}
+            </div>
             <div className="user-info">
               <div className="user-name">{user?.name}</div>
               <div className="user-role">{user?.role}</div>
@@ -90,7 +90,9 @@ export default function Topbar({ onMenuClick }) {
           {menuOpen && (
             <div className="user-panel" role="menu">
               <div className="user-panel-head">
-                <div className="user-avatar user-avatar-lg">{initials}</div>
+                <div className="user-avatar user-avatar-lg">
+                  {avatarUrl ? <img src={avatarUrl} alt={user?.name} /> : initials}
+                </div>
                 <div>
                   <div className="user-panel-name">{user?.name}</div>
                   <div className="user-panel-email">{user?.email}</div>
