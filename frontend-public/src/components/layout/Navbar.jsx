@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import Button from "../ui/Button.jsx";
 import SearchPill from "../ui/SearchPill.jsx";
+import { useSite } from "../../context/SiteContext.jsx";
 
 function HamburgerIcon() {
   return (
@@ -22,8 +23,28 @@ function CloseIcon() {
   );
 }
 
+/**
+ * Split site name into strong + rest parts.
+ * "SIRA Technologies" → { strong: "SIRA", rest: "Technologies" }
+ * "MyBrand"           → { strong: "MyBrand", rest: "" }
+ */
+function splitBrand(name = "") {
+  const trimmed = name.trim();
+  const idx = trimmed.indexOf(" ");
+  if (idx === -1) return { strong: trimmed, rest: "" };
+  return {
+    strong: trimmed.slice(0, idx),
+    rest: trimmed.slice(idx + 1),
+  };
+}
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { settings } = useSite();
+
+  const brand = splitBrand(settings?.siteName || "SIRA Technologies");
+  const logoUrl = settings?.logo?.url || "/assets/logo.png";
+  const logoAlt = settings?.siteName || "SIRA Technologies";
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -49,17 +70,25 @@ export default function Navbar() {
           {/* LEFT: Brand */}
           <Link to="/" className="brand" onClick={closeMenu}>
             <img
-              src="/assets/logo.png"
-              alt="SIRA Technologies"
+              src={logoUrl}
+              alt={logoAlt}
               className="brand-logo"
-              onError={(e) => (e.currentTarget.style.display = "none")}
+              onError={(e) => {
+                // Fallback chain: DB logo → default asset → hide
+                if (e.currentTarget.src !== window.location.origin + "/assets/logo.png") {
+                  e.currentTarget.src = "/assets/logo.png";
+                } else {
+                  e.currentTarget.style.display = "none";
+                }
+              }}
             />
             <span className="brand-text">
-              <span className="brand-text-strong">SIRA</span> Technologies
+              <span className="brand-text-strong">{brand.strong}</span>
+              {brand.rest && ` ${brand.rest}`}
             </span>
           </Link>
 
-          {/* CENTER: Desktop nav only */}
+          {/* CENTER: Desktop nav */}
           <nav className="header-links" aria-label="Primary navigation">
             <NavLink to="/services" className="header-link">
               Services
@@ -81,12 +110,12 @@ export default function Navbar() {
             </NavLink>
           </nav>
 
-          {/* SEARCH: always visible, but on mobile it sits in the top row center */}
+          {/* SEARCH */}
           <div className="header-search">
             <SearchPill placeholder="Search services..." />
           </div>
 
-          {/* RIGHT: Quote (desktop only) + Hamburger (mobile only) */}
+          {/* RIGHT: Quote + Hamburger */}
           <div className="header-actions">
             <Button
               as={Link}
@@ -127,7 +156,13 @@ export default function Navbar() {
       >
         <div className="drawer-head">
           <div style={{ fontWeight: 800, color: "var(--ink)" }}>Menu</div>
-          <button type="button" className="menu-btn" aria-label="Close menu" onClick={closeMenu}>
+          <button
+            type="button"
+            className="menu-btn"
+            aria-label="Close menu"
+            onClick={closeMenu}
+            style={{ display: "inline-flex" }}
+          >
             <CloseIcon />
           </button>
         </div>
@@ -153,7 +188,7 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        {/* Mobile CTA: Get a Quote INSIDE dropdown */}
+        {/* Mobile CTA */}
         <div className="drawer-cta">
           <Button
             as={Link}
