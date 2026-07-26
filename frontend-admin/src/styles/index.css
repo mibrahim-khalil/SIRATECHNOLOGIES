@@ -2308,3 +2308,568 @@ select {
   display: flex;
   gap: 6px;
 }
+
+/* =========================
+   PHASE 3 STYLES
+   ========================= */
+
+/* =========================
+   TEAM GRID (ManageTeam)
+   ========================= */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.team-card {
+  background: var(--canvas);
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 200ms ease;
+}
+
+.team-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--hairline);
+}
+
+.team-photo {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--soft-cloud);
+  overflow: hidden;
+}
+
+.team-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.team-photo-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 60px;
+  font-weight: 800;
+  color: var(--stone);
+  background: linear-gradient(135deg, var(--soft-cloud) 0%, var(--hairline-soft) 100%);
+}
+
+.team-body {
+  padding: 16px;
+  flex: 1;
+}
+
+.team-name-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.team-name {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.team-role {
+  color: var(--brand);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.team-bio {
+  color: var(--mute);
+  font-size: 13px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.team-socials {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.team-social {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--soft-cloud);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  transition: all 160ms ease;
+  text-decoration: none;
+  border: 1px solid var(--hairline-soft);
+}
+
+.team-social:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   PRICING CARDS (ManagePricing)
+   ========================= */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.pricing-card {
+  background: var(--canvas);
+  border: 2px solid var(--hairline-soft);
+  border-radius: var(--r-lg);
+  padding: 20px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 200ms ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.pricing-card-featured {
+  border-width: 2px;
+  box-shadow: var(--shadow-md);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 14px;
+  border-radius: var(--r-pill);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pricing-head {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline-soft);
+  margin-bottom: 14px;
+}
+
+.pricing-name {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.pricing-tagline {
+  color: var(--mute);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.pricing-price-value {
+  color: var(--ink);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.pricing-price-cycle {
+  color: var(--mute);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pricing-price-custom {
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.3px;
+}
+
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--charcoal);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pricing-features li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pricing-feature-excluded {
+  color: var(--mute);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.pricing-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline-soft);
+  margin-bottom: 12px;
+}
+
+/* Feature editor (inside modal) */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feature-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+/* =========================
+   REVIEW GRID (ManageReviews)
+   ========================= */
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.review-card {
+  background: var(--canvas);
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  transition: all 200ms ease;
+  position: relative;
+}
+
+.review-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--hairline);
+}
+
+.review-card-pending {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.04) 0%, var(--canvas) 40%);
+}
+
+.review-pending-tag {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: #f59e0b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+
+.review-head {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.review-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--soft-cloud);
+  flex-shrink: 0;
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.review-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.review-name {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.review-meta {
+  color: var(--mute);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.review-message {
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.review-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.review-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline-soft);
+  margin-top: auto;
+}
+
+.svc-tag-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--info);
+}
+
+/* Chip count badge (for pending indicator in filter) */
+.chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: var(--r-pill);
+  background: #f59e0b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.chip-active .chip-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* =========================
+   ABOUT PAGE — DYNAMIC ROWS
+   ========================= */
+.dynamic-row {
+  padding: 14px;
+  background: var(--soft-cloud);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--hairline-soft);
+  margin-bottom: 10px;
+}
+
+.dynamic-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+  .feature-row {
+    grid-template-columns: auto 1fr auto;
+    gap: 6px;
+  }
+
+  .review-head {
+    flex-wrap: wrap;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================
+   DYNAMIC LOGO + AVATAR (NEW)
+   ========================= */
+
+/* Sidebar: when a real logo image is present, remove the gradient bg */
+.sidebar-brand-logo.has-image {
+  background: #ffffff;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.sidebar-brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Login: when a real logo image is present, replace the pill with the image */
+.login-logo.has-image {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.login-logo.has-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  display: block;
+}
+
+/* Topbar avatar image support (both sizes) */
+.user-avatar {
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Settings hero avatar image support */
+.settings-hero-avatar {
+  overflow: hidden;
+}
+
+.settings-hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+/* =========================
+   AVATAR UPLOADER (Settings page)
+   ========================= */
+.avatar-uploader {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.avatar-uploader-preview {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  font-weight: 800;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid var(--canvas);
+  box-shadow: 0 4px 16px rgba(11, 42, 67, 0.12);
+}
+
+.avatar-uploader-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-uploader-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .avatar-uploader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
