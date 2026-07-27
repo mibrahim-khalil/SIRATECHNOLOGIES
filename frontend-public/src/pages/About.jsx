@@ -21,10 +21,13 @@ const FALLBACK_ABOUT = {
   storyContent:
     "SIRA Technologies is a digital solutions company focused on building innovative, scalable, and future-ready technology solutions. We help businesses transform ideas into powerful digital products by combining creativity, engineering expertise, and emerging technologies.",
   storyImage: null,
+
   mission:
     "To empower businesses with modern, scalable technology that drives real growth and lasting impact.",
+
   vision:
     "To become a trusted digital innovation partner for businesses worldwide by creating impactful, scalable, and intelligent technology solutions.",
+    
   stats: [
     { value: "50+", label: "Projects delivered", icon: "TrendingUp" },
     { value: "10+", label: "Happy clients", icon: "Users" },
