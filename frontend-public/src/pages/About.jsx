@@ -27,9 +27,9 @@ const FALLBACK_ABOUT = {
 
   vision:
     "To become a trusted digital innovation partner for businesses worldwide by creating impactful, scalable, and intelligent technology solutions.",
-
+    
   stats: [
-    { value: "10+", label: "Projects delivered", icon: "TrendingUp" },
+    { value: "50+", label: "Projects delivered", icon: "TrendingUp" },
     { value: "10+", label: "Happy clients", icon: "Users" },
     { value: "100%", label: "Client satisfaction", icon: "Heart" },
     { value: "24/7", label: "Support available", icon: "Clock" },
